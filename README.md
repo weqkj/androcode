@@ -1,6 +1,5 @@
-# androcode 
 <div align="center">
-  <img src="[assets/icon.svg](https://github.com/weqkj/androcode/raw/main/AndroCode/assets/icon.svg)" width="112" height="112" alt="AndroCode Logo" />
+  <img src="assets/icon.svg" width="112" height="112" alt="AndroCode Logo" />
   <h1>AndroCode</h1>
   <p><b>Автономный ИИ-агент для Android с Root-правами, лёгким русским TTS, .plugin и Dynamic Color</b></p>
 
