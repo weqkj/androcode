@@ -1,6 +1,8 @@
 package com.androcode.app.agent
 
 import android.content.Context
+import android.net.Uri
+import android.provider.OpenableColumns
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -92,6 +94,7 @@ object LocalModels {
                 if (target.exists()) {
                     status = tr("Готово: ${target.name}", "Done: ${target.name}")
                     Prefs.updateLocalModel(target.absolutePath)
+                    Prefs.selectProvider(com.androcode.app.data.ProviderKind.LOCAL)
                     progress = 1f
                 } else status = tr("Отменено", "Cancelled")
             } catch (e: kotlinx.coroutines.CancellationException) {
@@ -100,6 +103,61 @@ object LocalModels {
             } catch (e: Exception) {
                 part.delete()
                 status = tr("Ошибка: ", "Error: ") + (e.message ?: e.toString())
+            } finally {
+                downloading = false
+                refresh(ctx)
+            }
+        }
+    }
+
+    /** Copies a .gguf picked with the system file picker into the models folder and selects it. */
+    fun importFile(ctx: Context, uri: Uri) {
+        if (downloading) return
+        var name = "model.gguf"
+        var total = 0L
+        ctx.contentResolver.query(uri, null, null, null, null)?.use { c ->
+            if (c.moveToFirst()) {
+                c.getColumnIndex(OpenableColumns.DISPLAY_NAME).takeIf { it >= 0 }?.let { name = c.getString(it) ?: name }
+                c.getColumnIndex(OpenableColumns.SIZE).takeIf { it >= 0 }?.let { total = c.getLong(it) }
+            }
+        }
+        val target = File(dir(ctx), name)
+        val part = File(target.absolutePath + ".part")
+        downloading = true
+        progress = 0f
+        status = tr("Копирую…", "Copying…")
+        dl = scope.launch {
+            try {
+                withContext(Dispatchers.IO) {
+                    val input = ctx.contentResolver.openInputStream(uri) ?: error("cannot open file")
+                    input.use { inp ->
+                        part.outputStream().use { out ->
+                            val buf = ByteArray(1 shl 20)
+                            var read = 0L
+                            var lastUi = 0L
+                            while (isActive) {
+                                val n = inp.read(buf)
+                                if (n < 0) break
+                                out.write(buf, 0, n)
+                                read += n
+                                val now = System.currentTimeMillis()
+                                if (total > 0 && now - lastUi > 200) {
+                                    lastUi = now
+                                    withContext(Dispatchers.Main) { progress = read.toFloat() / total; status = "${read shr 20} / ${total shr 20} MB" }
+                                }
+                            }
+                        }
+                    }
+                    if (isActive) part.renameTo(target) else part.delete()
+                }
+                status = tr("Готово: ${target.name}", "Done: ${target.name}")
+                Prefs.updateLocalModel(target.absolutePath)
+                Prefs.selectProvider(com.androcode.app.data.ProviderKind.LOCAL)
+                progress = 1f
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                part.delete(); status = tr("Отменено", "Cancelled")
+            } catch (e: Exception) {
+                part.delete(); status = tr("Ошибка: ", "Error: ") + (e.message ?: e.toString())
             } finally {
                 downloading = false
                 refresh(ctx)

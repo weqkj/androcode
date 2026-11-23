@@ -59,7 +59,7 @@ private fun radius(b: Blob, th: Float): Float =
 /** Writes the (optionally morphed) blob outline into this path. */
 fun Path.blob(cx: Float, cy: Float, r: Float, rot: Float, a: Blob, b: Blob = a, t: Float = 0f) {
     rewind()
-    val n = 84
+    val n = 56
     for (i in 0..n) {
         val th = (2.0 * PI * i / n).toFloat()
         val ra = radius(a, th)
@@ -85,7 +85,7 @@ private val specs: List<Spec> = run {
         Blobs.Circle, Blobs.Cookie7, Blobs.Cookie9, Blobs.Flower5, Blobs.Clover4,
         Blobs.Burst12, Blobs.Triangle, Blobs.Star6, Blobs.Gem8, Blobs.Squircle,
     )
-    List(14) { i ->
+    List(10) { i ->
         Spec(
             a = pool[r.nextInt(pool.size)], b = pool[r.nextInt(pool.size)], role = i % 6,
             size = 0.10f + r.nextFloat() * 0.20f,
@@ -136,8 +136,9 @@ fun ShapeField(modifier: Modifier = Modifier, energy: State<Float>? = null) {
         val t = tau.floatValue
         val d = dTau.floatValue
         val strength = if (Prefs.motionBlur) Prefs.blurStrength else 0f
-        val samples = if (strength <= 0f) 1 else (5 + 4 * strength).toInt()
-        val shutter = d * 5f * strength // how many frames of motion each exposure covers
+        val shutter = d * 5f * strength
+        // trail only while things move fast: idle frames draw a single sample
+        val samples = if (strength <= 0f || shutter < 0.02f) 1 else (3 + 2 * strength).toInt() // how many frames of motion each exposure covers
         for (s in specs) {
             val col = colors[s.role]
             for (k in samples - 1 downTo 0) {
@@ -188,7 +189,7 @@ fun MorphHero(size: Dp, modifier: Modifier = Modifier, onTap: () -> Unit = {}) {
         val a = shapes[i]
         val b = shapes[(i + 1) % 4]
 
-        val trail = if (Prefs.motionBlur) (5 * Prefs.blurStrength).toInt() else 0
+        val trail = if (Prefs.motionBlur) (3 * Prefs.blurStrength).toInt() else 0
         for (k in trail downTo 1) {
             path.blob(c.x, c.y, r, spin - k * 0.04f, a, b, f)
             drawPath(path, cs.primary.copy(alpha = 0.12f * (1f - k / (trail + 1f))))

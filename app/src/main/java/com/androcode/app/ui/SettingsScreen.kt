@@ -1,6 +1,8 @@
 package com.androcode.app.ui
 
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.background
@@ -238,6 +240,7 @@ private fun LocalModelSection() {
     var url by rememberSaveable { mutableStateOf("") }
     var msg by remember { mutableStateOf("") }
     LaunchedEffect(Unit) { LocalModels.refresh(ctx) }
+    val picker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri -> if (uri != null) LocalModels.importFile(ctx, uri) }
 
     Text(
         tr(
@@ -255,6 +258,7 @@ private fun LocalModelSection() {
         Button(onClick = { LocalModels.download(ctx, url.trim(), "") }, enabled = !LocalModels.downloading && url.isNotBlank()) {
             Icon(Icons.Rounded.Download, null, Modifier.size(18.dp)); Spacer(Modifier.width(8.dp)); Text(tr("Скачать", "Download"))
         }
+        OutlinedButton(onClick = { picker.launch(arrayOf("*/*")) }, enabled = !LocalModels.downloading) { Text(tr("Выбрать файл", "Pick file")) }
         if (LocalModels.downloading) OutlinedButton(onClick = { LocalModels.cancelDownload() }) { Text(tr("Отмена", "Cancel")) }
     }
     AnimatedVisibility(LocalModels.downloading || LocalModels.status.isNotBlank()) {
