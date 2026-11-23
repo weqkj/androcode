@@ -40,9 +40,24 @@ jobs:
           name: Androcode-apk
           path: dist/Androcode.apk
 
-      - name: Publish GitHub Release (on tag)
-        if: startsWith(github.ref, 'refs/tags/v')
+      - name: Read version
+        id: ver
+        run: echo "name=$(grep -oP 'versionName = "\K[^"]+' app/build.gradle.kts)" >> "$GITHUB_OUTPUT"
+
+      - name: Publish GitHub Release
+        if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v'))
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || format('v{0}', steps.ver.outputs.name) }}
+          target_commitish: ${{ github.sha }}
+          name: Androcode ${{ steps.ver.outputs.name }}
           files: dist/Androcode.apk
-          generate_release_notes: true
+          make_latest: true
+          body: |
+            ## Androcode ${{ steps.ver.outputs.name }}
+
+            **Install:** download `Androcode.apk` below, allow installs from unknown sources, open it.
+            Requires **Android 12+**; root (Magisk / KernelSU / APatch) recommended.
+
+            > Root gives the agent full control of the device — read commands before approving.
+            > If you have an older Androcode build installed, uninstall it first (different signing key).
