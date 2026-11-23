@@ -214,7 +214,7 @@ fun SettingsScreen(onBack: () -> Unit, onReplayWelcome: () -> Unit) {
 
                 // ---------------------------------------------------------------- about
                 SectionCard(tr("О приложении", "About"), Modifier.appear(400, 24.dp, 14f)) {
-                    Text("Androcode 1.0.0", style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold)
+                    Text("Androcode 1.1.0", style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold)
                     Text(
                         tr(
                             "Независимый open-source проект. Не связан с Anthropic. Используй на свой риск.",
