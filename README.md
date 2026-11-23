@@ -5,7 +5,7 @@
 # Androcode
 
 **Claude Code-style AI agent for rooted Android.**<br/>
-ИИ-агент в стиле Claude Code — прямо на твоём телефоне.
+ИИ-агент в стиле Claude Code — прямо на твоём телефоне..
 
 [![Build](https://img.shields.io/github/actions/workflow/status/weqkj/androcode/build.yml?style=for-the-badge&logo=githubactions&logoColor=white&label=build)](https://github.com/weqkj/androcode/actions)
 [![Release](https://img.shields.io/github/v/release/weqkj/androcode?style=for-the-badge&color=7C5CFF)](https://github.com/weqkj/androcode/releases/latest)
