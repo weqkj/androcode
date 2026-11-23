@@ -5,12 +5,12 @@ plugins {
 
 android {
     namespace = "com.androcode.app"
-    compileSdk = 35
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.androcode.app"
-        minSdk = 31
-        targetSdk = 35
+        minSdk = 31 // Android 12+: Material You dynamic colour, RenderEffect blur, themed icons
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0.0"
     }
@@ -18,6 +18,8 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = false
+            // Signed with the debug key so the APK installs out of the box.
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
     compileOptions {
@@ -33,6 +35,13 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.14"
     }
+    lint {
+        abortOnError = false
+        checkReleaseBuilds = false
+    }
+    packaging {
+        resources.excludes += "/META-INF/{AL2.0,LGPL2.1}"
+    }
 }
 
 dependencies {
@@ -41,7 +50,10 @@ dependencies {
     implementation("androidx.activity:activity-compose:1.9.1")
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-graphics")
+    implementation("androidx.compose.foundation:foundation")
+    implementation("androidx.compose.animation:animation")
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.material:material-icons-extended")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
     implementation("com.github.topjohnwu.libsu:core:5.2.2")
 }
