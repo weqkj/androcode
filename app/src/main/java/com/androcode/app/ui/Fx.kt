@@ -67,6 +67,7 @@ fun Modifier.appear(delayMs: Int = 0, dy: Dp = 26.dp, blur: Float = 22f): Modifi
  * Screen / page switch: slides horizontally with an emphasized easing while the outgoing and incoming
  * content get a horizontal motion blur that fades out as the motion settles.
  */
+@OptIn(androidx.compose.animation.ExperimentalAnimationApi::class)
 @Composable
 fun <S> BlurSwitch(
     target: S,

@@ -76,7 +76,7 @@ fun SettingsScreen(onBack: () -> Unit, onReplayWelcome: () -> Unit) {
 
     Box(Modifier.fillMaxSize().background(cs.background)) {
         val energy = remember { Animatable(0.06f) }
-        ShapeField(Modifier.fillMaxSize(), energy)
+        ShapeField(Modifier.fillMaxSize(), energy.asState())
         Column(Modifier.fillMaxSize().statusBarsPadding()) {
             Row(Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
                 IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Rounded.ArrowBack, tr("Назад", "Back")) }

@@ -84,7 +84,7 @@ fun OnboardingScreen(onDone: () -> Unit) {
     }
 
     Box(Modifier.fillMaxSize().background(cs.background)) {
-        ShapeField(Modifier.fillMaxSize(), energy)
+        ShapeField(Modifier.fillMaxSize(), energy.asState())
         Column(Modifier.fillMaxSize().systemBarsPadding().padding(horizontal = 24.dp, vertical = 12.dp)) {
             Box(Modifier.weight(1f)) {
                 BlurSwitch(page, { it }) { p ->

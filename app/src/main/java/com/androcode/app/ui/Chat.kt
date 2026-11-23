@@ -112,7 +112,7 @@ fun ChatScreen(onSettings: () -> Unit) {
     }
 
     Box(Modifier.fillMaxSize().background(cs.background)) {
-        ShapeField(Modifier.fillMaxSize(), energy)
+        ShapeField(Modifier.fillMaxSize(), energy.asState())
         Column(Modifier.fillMaxSize().systemBarsPadding().imePadding()) {
             TopBar(onSettings)
             Box(Modifier.weight(1f).fillMaxWidth()) {
